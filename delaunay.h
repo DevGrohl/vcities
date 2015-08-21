@@ -32,7 +32,7 @@ private:
 		T dist = c.radio2();
 		double area = _2D::Triangulo<T>(puntos[i],puntos[j],puntos[k]).area();
 		//std::cout<<c.toString()<<" "<<area<<std::endl;
-		if(colineares(puntos[i],puntos[j],puntos[k]) or not isfinite(c.radio)){
+		if(colineares(puntos[i],puntos[j],puntos[k]) or not std::isfinite(c.radio)){
 			return;
 		}
 		for(int w = 0; w < puntos.size(); w++){
@@ -97,7 +97,7 @@ public:
 
 	//Retorna un grafo que 
 	std::vector<std::vector<bool>> grafoDeTriangulos(){
-		std::vector<std::vector<bool>> grafo(puntos.size(),vector<bool>(puntos.size()));
+		std::vector<std::vector<bool>> grafo(puntos.size(),std::vector<bool>(puntos.size()));
 		for(auto t: triangulitos){
 			grafo[t.x][t.y] = true;
 			grafo[t.x][t.z] = true;

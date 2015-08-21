@@ -75,7 +75,7 @@ private:
 	std::vector<_2D::Linea<T>> lineas; //Lineas del diagrama
 	//Calculo de las regiones
 	std::vector<_2D::Poligono<T>> regiones_; //Regiones en el diagrama
-	std::vector<vector<bool>> GT; 		//grafo de delaunay
+	std::vector<std::vector<bool>> GT; 		//grafo de delaunay
 	bool calcularRegiones_;
 public:
 	Voronoi(){
@@ -113,7 +113,7 @@ public:
 
 	void calcular(){
 		puntos = delaunay.damePuntos();
-		std::cout<<"Iniciando el Calculo de voronoi con "<<puntos.size()<<" Puntos "<<endl;
+		std::cout<<"Iniciando el Calculo de voronoi con "<<puntos.size()<<" Puntos "<<std::endl;
 		delaunay.calcular();
 		triangulos = delaunay.dameTriangulos();
 	//Calculo de los triangulos adyacentes	
@@ -141,8 +141,8 @@ public:
 			}
 		}
 		if(calcularRegiones_){
-			vector<vector<bool>> grafoTriangulos = GT;//delaunay.dameGrafo();
-			cout<<grafoTriangulos.size()<<" "<<puntos.size()<<endl;
+			std::vector<std::vector<bool>> grafoTriangulos = GT;//delaunay.dameGrafo();
+			std::cout<<grafoTriangulos.size()<<" "<<puntos.size()<<std::endl;
 			for(int i=0;i<grafoTriangulos.size();i++){
 				_2D::Poligono<T> region;
 				std::vector<_2D::Punto<T>> p;
@@ -168,8 +168,9 @@ public:
 						break;	
 					}
 				}
-				if(not choca)
+				if(not choca){	
 					regiones_.push_back(region);
+				}
 			}
 		}
 	}

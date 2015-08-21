@@ -17,43 +17,7 @@ const int SCREEN_Y = 1000;
 const char * WINDOW_NAME = "VCities";
 const int ANCHURA_MANZANAS = 7;
 const int LARGO_MANZANAS = 15;
-/*
-Linea<double> recorta(Punto<double> ini, Punto<double> fin,const Poligono<double>& p){
-	for(int i=1;i<p.cantLados();i++){ 
-		if(l.colision(Linea<double>(p.vertices[i], p.vertices[i-1]))){
 
-		}
-	}
-}
-*/
-vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
-	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
-	//Algunas variables auxiliares precalculadas
-	llint base = r.base();
-	llint altura = r.altura();
-	llint angulo = -r.angulo();
-	//Se barre la matriz de punto base x altura
-	vector<Linea<double>> res, l;
-	for(llint y = 0; y<altura; y+=LARGO_MANZANAS){
-		Linea<llint> li (Punto<llint>(0,-y),Punto<llint>(-base,-y));
-		li.inicio = li.inicio.rotar(-angulo);
-		li.fin = li.fin.rotar(-angulo);
-		li+=r.p4;
-		l.push_back(li);
-	}
-	for(llint x = 0; x<base; x+=ANCHURA_MANZANAS){
-		Linea<llint> li (Punto<llint>(-x,0),Punto<llint>(-x,-altura));
-		li.inicio = li.inicio.rotar(-angulo);
-		li.fin = li.fin.rotar(-angulo);
-		li+=r.p4;
-		l.push_back(li);
-	}
-	
-	for(auto i: l){
-//		recorta(i,region);
-	}
-	return res;
-}
 
 
 
@@ -91,8 +55,8 @@ public:
 			}
 		}
 
-		voronoi.calcularRegiones(true);
-		voronoi.calcular();
+
+		//voronoi.calcular();
 		puntos=voronoi.damePuntos();
 		lineas=voronoi.dameLineas();
 		triangulacion=voronoi.dameGrafoTriangulacion();	
@@ -102,15 +66,98 @@ public:
 
 		//Calculo de los puntos internos a las regiones
 		for(auto region: regiones){
-		//	auto region = regiones[36];
-			auto temp = mallaDePuntos(region);
-		//	lineas.insert(lineas.end(),temp.begin(), temp.end());
+			Voronoi<llint> ciudad;
+			cout<<owl(region)<<endl;
+			//Se calcula el rectangulo recubridor
+			RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
+			//Algunas variables auxiliares precalculadas
+			llint base = r.base();
+			llint altura = r.altura();
+			llint angulo = -r.angulo();
+			//Se barre la matriz de punto base x altura
+			for(llint x = ANCHURA_MANZANAS; x<base; x+=ANCHURA_MANZANAS){
+				for(llint y = LARGO_MANZANAS; y<altura; y+=LARGO_MANZANAS){
+					Punto<llint> p(-x,-y);
+					p=p.rotar(-angulo);
+					p+=r.p4;
+					if(region.contiene(p)){
+						ciudad.agregaPunto(p);
+					//	puntos.push_back(p);
+					//	cout<<":P"<<endl;
+					}
+				}
+			}
+
+			ciudad.calcularRegiones(false);
+			cout<<"Region: "<<i++<<"/"<<tam<<"::"<<ciudad.cantidadPuntos()<<endl;
+			if(ciudad.cantidadPuntos()<350){	
+				ciudad.calcular();
+			}
+			vector<Linea<llint>> temp=ciudad.dameLineas();
+			/*
+			glClear(GL_COLOR_BUFFER_BIT);
+			glColor(Color::verde);
+			glDraw(temp);
+			glutSwapBuffers();
+			glFlush();
+			this_thread::sleep_for(chrono::seconds(1));		
+			*/
+			lineas.insert(lineas.end(),temp.begin(), temp.end());
 		}
 		cout<<"Fin"<<endl;
 	}
 
 
 	void dibujar(){
+		Poligono<llint> region;
+		region.agregaPunto(Punto<llint>(868.017688,674.985424));
+		region.agregaPunto(Punto<llint>(748.532302,718.078514));
+		region.agregaPunto(Punto<llint>(740.507740,711.551072));
+		region.agregaPunto(Punto<llint>(740.368421,704.631579));
+		region.agregaPunto(Punto<llint>(834.643836,610.356164));
+		region.agregaPunto(Punto<llint>(850.983158,620.231579));
+	/*	glClear(GL_COLOR_BUFFER_BIT);
+		glColor(Color::azul);
+		glDraw(region);
+		glColor(Color::verde);
+		glDraw(region.rectanguloRecubridorMinimo());
+		glColor(Color::rojo);*/
+		Voronoi<llint> v;
+		RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
+			//Algunas variables auxiliares precalculadas
+			llint base = r.base();
+			llint altura = r.altura();
+			llint angulo = -r.angulo();
+			//Se barre la matriz de punto base x altura
+			for(llint x = ANCHURA_MANZANAS; x<base; x+=ANCHURA_MANZANAS){
+				for(llint y = LARGO_MANZANAS; y<altura; y+=LARGO_MANZANAS){
+					Punto<llint> p(-x,-y);
+					p=p.rotar(-angulo);
+					p+=r.p4;
+					if(region.contiene(p)){
+						glDraw(p,3);
+						v.agregaPunto(p);
+					//	puntos.push_back(p);
+					//	cout<<":P"<<endl;
+					}
+				}
+			}
+		v.calcularRegiones(false);
+		v.calcular();
+		glColor(Color::verde);
+		auto l = v.dameLineas();
+		for(auto i: l){
+			glDraw(i);
+		}
+	//	ofstream file("lineas.xml");
+	//	for(auto zzz: l){
+	//		file<<owl(zzz)<<endl;
+	//	}
+	//	file.close();
+		//glDrawPixels(vng.obtenerImagen());
+		glutSwapBuffers();
+		glFlush();
+		return;
 		cout<<"Inicia dibujo"<<endl;
 		cout<<"Cantidad de lineas: "<<lineas.size()<<endl;
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -180,7 +227,7 @@ int main(int argc, char** argv){
 	glutDisplayFunc(renderFunction); 
 	glutKeyboardFunc(eventoTeclado); 
 	srand(time(NULL));
-	vs = interfaz(SCREEN_X,SCREEN_Y,8,8);
+	vs = interfaz(SCREEN_X,SCREEN_Y,10,10);
 	glutMainLoop(); 
 	return 0; 
 } 

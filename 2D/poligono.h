@@ -27,6 +27,11 @@ public:
 	int tam() const{
 		return vertices.size();
 	}
+
+	int cantLados() const{
+		return vertices.size();
+	}
+
 	const Punto<T> operator[](int i)const {
 		return vertices[i];
 	}
@@ -43,10 +48,10 @@ public:
 	Rectangulo<T> rectanguloRecubridor()const{
 		Rectangulo<T> resultado(vertices[0],vertices[0]);
 		for(auto p: vertices){
-			resultado.inicio.x = min(resultado.inicio.x,p.x);
-			resultado.inicio.y = min(resultado.inicio.y,p.y);
-			resultado.fin.x = max(resultado.fin.x,p.x);
-			resultado.fin.y = max(resultado.fin.y,p.y);
+			resultado.inicio.x = std::min(resultado.inicio.x,p.x);
+			resultado.inicio.y = std::min(resultado.inicio.y,p.y);
+			resultado.fin.x = std::max(resultado.fin.x,p.x);
+			resultado.fin.y = std::max(resultado.fin.y,p.y);
 		}
 		return resultado;
 	}
@@ -75,13 +80,17 @@ public:
 		return resultado;
 	}
 
-	bool contiene(const Punto<T>& p){
+	bool contiene(const Punto<T>& p) const{
 		for(int i=1;i<tam();i++){
 			if(ccw(p,vertices[i-1], vertices[i])<0){
 				return false;
 			}
 		}
 		return true;
+	}
+
+	bool contiene(const Linea<T>& l) const{
+		return contiene(l.inicio) and contiene(l.fin);
 	}
 };
 

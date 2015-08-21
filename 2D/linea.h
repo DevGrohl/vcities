@@ -27,6 +27,9 @@ namespace _2D{
 				return inicio.toString()+std::string("->")+fin.toString();
 			}			
 			bool colisiona(const Linea<T>& b)const {
+				return (ccw(inicio,fin,b.inicio) * ccw(inicio, fin, b.fin) < 0) and (ccw(b.inicio, b.fin, inicio)*ccw(b.inicio, b.fin, fin)<0);
+			}
+			bool colisionaBordes(const Linea<T>& b)const {
 				return (ccw(inicio,fin,b.inicio) * ccw(inicio, fin, b.fin) <= 0) and (ccw(b.inicio, b.fin, inicio)*ccw(b.inicio, b.fin, fin)<=0);
 			}
 			Linea bisector(const T& x1, const T& x2)const{
