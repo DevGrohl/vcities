@@ -10,22 +10,14 @@
 using namespace std;
 using namespace _2D;
 
-typedef double llint;
+typedef long double llint;
 
 const int SCREEN_X = 1000;
 const int SCREEN_Y = 1000;
 const char * WINDOW_NAME = "VCities";
 const int ANCHURA_MANZANAS = 7;
 const int LARGO_MANZANAS = 15;
-/*
-Linea<double> recorta(Punto<double> ini, Punto<double> fin,const Poligono<double>& p){
-	for(int i=1;i<p.cantLados();i++){ 
-		if(l.colision(Linea<double>(p.vertices[i], p.vertices[i-1]))){
 
-		}
-	}
-}
-*/
 vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
 	//Algunas variables auxiliares precalculadas
@@ -33,24 +25,39 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	llint altura = r.altura();
 	llint angulo = -r.angulo();
 	//Se barre la matriz de punto base x altura
-	vector<Linea<double>> res, l;
-	for(llint y = 0; y<altura; y+=LARGO_MANZANAS){
-		Linea<llint> li (Punto<llint>(0,-y),Punto<llint>(-base,-y));
-		li.inicio = li.inicio.rotar(-angulo);
-		li.fin = li.fin.rotar(-angulo);
-		li+=r.p4;
-		l.push_back(li);
+	vector<Linea<llint>> res, l;
+	for(llint y = 0; y<=altura; y+=LARGO_MANZANAS){
+		for(llint x= ANCHURA_MANZANAS; x<=base; x+= ANCHURA_MANZANAS){		
+			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x+ANCHURA_MANZANAS,-y));
+			li.inicio = li.inicio.rotar(-angulo);
+			li.fin = li.fin.rotar(-angulo);
+			li+=r.p4;
+			l.push_back(li);
+		}
 	}
-	for(llint x = 0; x<base; x+=ANCHURA_MANZANAS){
-		Linea<llint> li (Punto<llint>(-x,0),Punto<llint>(-x,-altura));
-		li.inicio = li.inicio.rotar(-angulo);
-		li.fin = li.fin.rotar(-angulo);
-		li+=r.p4;
-		l.push_back(li);
+
+	for(llint x = 0; x<=base; x+=ANCHURA_MANZANAS){
+		for(llint y = LARGO_MANZANAS; y<=altura; y+=LARGO_MANZANAS){		
+			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x,-y+LARGO_MANZANAS));
+			li.inicio = li.inicio.rotar(-angulo);
+			li.fin = li.fin.rotar(-angulo);
+			li+=r.p4;
+			l.push_back(li);
+		}
 	}
 	
 	for(auto i: l){
-//		recorta(i,region);
+		bool contiene_ini = region.contiene(i.inicio);
+		bool contiene_fin = region.contiene(i.fin);
+		if(contiene_ini and contiene_fin){
+			res.push_back(i);
+		}else if(contiene_fin){
+			i.inicio = region.puntoInterseccion(i);
+			res.push_back(i);
+		}else if(contiene_ini){
+			i.fin = region.puntoInterseccion(i);
+			res.push_back(i);
+		}
 	}
 	return res;
 }
@@ -104,7 +111,7 @@ public:
 		for(auto region: regiones){
 		//	auto region = regiones[36];
 			auto temp = mallaDePuntos(region);
-		//	lineas.insert(lineas.end(),temp.begin(), temp.end());
+			lineas.insert(lineas.end(),temp.begin(), temp.end());
 		}
 		cout<<"Fin"<<endl;
 	}
@@ -127,18 +134,24 @@ public:
 		//Debugg de los rectangulos sobre las regiones
 		/*
 		int k=0;
+		Imagen I;
 		glReadPixels(I);
 		for(auto region: regiones){
 			glDrawPixels(I);
-		//	glColor(Color::azul);
-		//	glDraw(region);		
-			glColor(Color::morado);
+			glColor(Color::azul);
+			glDraw(region);		
+			glColor(Color::magenta);
 			glDraw(region.rectanguloRecubridorMinimo());
 			glutSwapBuffers();
 			glFlush();
-			this_thread::sleep_for(chrono::seconds(1));
+			int x;
+			cin>>x;
+			if(x)
+				cout<<region.toString()<<endl;
+		//	this_thread::sleep_for(chrono::seconds(1));
 		}
 		*/
+		
 		
 		glutSwapBuffers();
 		glFlush();

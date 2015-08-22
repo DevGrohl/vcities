@@ -54,15 +54,16 @@ namespace _2D{
 
 	};
 
-	Punto<double> interseccion(const Linea<double>& a,const Linea<double>& b){
-		double A1, B1, C1, dx1, dy1;
+	template<class T>
+	Punto<T> interseccion(const Linea<T>& a,const Linea<T>& b){
+		T A1, B1, C1, dx1, dy1;
 		dx1 = a.fin.x-a.inicio.x;
 		dy1 = a.fin.y-a.inicio.y;
 		A1 = dy1;
 		B1 = -dx1;
 		C1 = a.inicio.y*dx1-a.inicio.x*dy1;
 
-		double A2, B2, C2, dx2, dy2;
+		T A2, B2, C2, dx2, dy2;
 		dx2 = b.fin.x-b.inicio.x;
 		dy2 = b.fin.y-b.inicio.y;
 		A2 = dy2;
@@ -71,10 +72,10 @@ namespace _2D{
 
 		//A1x + B1y = -C1x
 		//A2x + B2y = -C2x
-		double Dg = A1*B2-A2*B1;
-		double Dx = -B1*C2+C1*B2;
-		double Dy = -A1*C2+C1*A2;
-		return Punto<double>(-Dx/Dg,Dy/Dg);
+		T Dg = A1*B2-A2*B1;
+		T Dx = -B1*C2+C1*B2;
+		T Dy = -A1*C2+C1*A2;
+		return Punto<T>(-Dx/Dg,Dy/Dg);
 	}
 	
 	template<class T>
