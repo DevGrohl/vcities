@@ -26,8 +26,8 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	llint angulo = -r.angulo();
 	//Se barre la matriz de punto base x altura
 	vector<Linea<llint>> res, l;
-	for(llint y = 0; y<=altura; y+=LARGO_MANZANAS){
-		for(llint x= ANCHURA_MANZANAS; x<=base; x+= ANCHURA_MANZANAS){		
+	for(llint y = 0; y-LARGO_MANZANAS<altura; y+=LARGO_MANZANAS){
+		for(llint x= ANCHURA_MANZANAS; x-LARGO_MANZANAS<base; x+= ANCHURA_MANZANAS){		
 			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x+ANCHURA_MANZANAS,-y));
 			li.inicio = li.inicio.rotar(-angulo);
 			li.fin = li.fin.rotar(-angulo);
@@ -36,8 +36,8 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 		}
 	}
 
-	for(llint x = 0; x<=base; x+=ANCHURA_MANZANAS){
-		for(llint y = LARGO_MANZANAS; y<=altura; y+=LARGO_MANZANAS){		
+	for(llint x = 0; x- ANCHURA_MANZANAS <base; x+=ANCHURA_MANZANAS){
+		for(llint y = LARGO_MANZANAS; y-LARGO_MANZANAS<altura; y+=LARGO_MANZANAS){		
 			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x,-y+LARGO_MANZANAS));
 			li.inicio = li.inicio.rotar(-angulo);
 			li.fin = li.fin.rotar(-angulo);
@@ -61,7 +61,6 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	}
 	return res;
 }
-
 
 
 class interfaz{
@@ -193,7 +192,7 @@ int main(int argc, char** argv){
 	glutDisplayFunc(renderFunction); 
 	glutKeyboardFunc(eventoTeclado); 
 	srand(time(NULL));
-	vs = interfaz(SCREEN_X,SCREEN_Y,8,8);
+	vs = interfaz(SCREEN_X,SCREEN_Y,15,15);
 	glutMainLoop(); 
 	return 0; 
 } 
