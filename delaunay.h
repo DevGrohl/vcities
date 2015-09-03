@@ -10,7 +10,7 @@
 namespace std{
 	template<>
 	struct hash<_3D::Punto<int>> : public __hash_base<size_t, _3D::Punto<int>>{
-   		size_t operator()(const _3D::Punto<int>& p) const{
+		size_t operator()(const _3D::Punto<int>& p) const{
         	hash<string> hasher;
         	return hasher.operator ()(p.toString());
     	}

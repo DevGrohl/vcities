@@ -7,16 +7,17 @@
 #include <chrono>				  //Debugging con sleeps
 #include <thread>				  //Debugging con sleeps
 #include "owl.h"				  //Para generar los xml
+#include <unordered_map>
 using namespace std;
 using namespace _2D;
 
-typedef long double llint;
+typedef double llint;
 
 const int SCREEN_X = 1000;
 const int SCREEN_Y = 1000;
 const char * WINDOW_NAME = "VCities";
-const int ANCHURA_MANZANAS = 7;
-const int LARGO_MANZANAS = 15;
+const int ANCHURA_MANZANAS = 12;
+const int LARGO_MANZANAS = 25;
 
 vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
@@ -46,6 +47,8 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 		}
 	}
 	
+
+	//Filtra las lineas que quedan fuera del poligono y recorta aquellas que estan sobre el contorno
 	for(auto i: l){
 		bool contiene_ini = region.contiene(i.inicio);
 		bool contiene_fin = region.contiene(i.fin);
@@ -62,6 +65,16 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	return res;
 }
 
+//Hash para los puntos 2D
+namespace std{
+	template<>
+	struct hash<_2D::Punto<int>> : public __hash_base<size_t, _2D::Punto<int>>{
+   		size_t operator()(const _2D::Punto<int>& p) const{
+        	hash<string> hasher;
+        	return hasher.operator()(p.toString());
+    	}
+	};
+}
 
 class interfaz{
 private:
@@ -73,8 +86,9 @@ private:
 
 	//resultados
 	vector<vector<bool>> triangulacion; //Grafo que representa 2 puntos deben conectarse segun la triangulacion de delaunay
-	vector<Linea<llint>> lineas;		    //Lineas del diagrama
+	vector<Punto<int>> lineas;		    //Lineas del diagrama
 	vector<Poligono<llint>> regiones;   //Poligonos de las regiones del diagrama de voronoi
+	map<int, Punto<int>> llaves;
 
 
 public:
@@ -88,7 +102,7 @@ public:
 		tamMat = Punto<int>(n,m);
 		int dx = x/n;
 		int dy = y/m;
-
+		vector<Linea<llint>> lineas_temp;
 
 		//Generacion de los puntos aleatorios
 		for(int i=0;i<n;i++){
@@ -100,7 +114,8 @@ public:
 		voronoi.calcularRegiones(true);
 		voronoi.calcular();
 		puntos=voronoi.damePuntos();
-		lineas=voronoi.dameLineas();
+		//Pendiente agregar las lineas de voronoi siendo recortadas
+		lineas_temp=voronoi.dameLineas();
 		triangulacion=voronoi.dameGrafoTriangulacion();	
 		regiones = voronoi.regiones();
 		int tam = regiones.size();
@@ -110,8 +125,47 @@ public:
 		for(auto region: regiones){
 		//	auto region = regiones[36];
 			auto temp = mallaDePuntos(region);
-			lineas.insert(lineas.end(),temp.begin(), temp.end());
+			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
 		}
+
+		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
+		//El punto intermedio C y se intercambian los valores de A y B en las demas lineas por C. 
+		//Trunca los valores reales para asi trabajar con enteros
+		vector<Linea<int>> lineas;
+		for(auto& l: lineas_temp){
+			lineas.push_back(Linea<int>(l));
+		}
+
+		unordered_map<Punto<int>, int> puntos;
+		int cont_id=0;
+		for(auto l: lineas){
+			if(puntos.count(l.inicio) == 0){
+				puntos[l.inicio] = cont_id++;
+			}
+			if(puntos.count(l.fin) == 0){
+				puntos[l.fin] = cont_id++;
+			}
+			int longitud = l.longitud2();
+			if( longitud< LARGO_MANZANAS*LARGO_MANZANAS or longitud < ANCHURA_MANZANAS*ANCHURA_MANZANAS){
+				Punto<int> centro = (l.inicio+l.fin)/2;
+				if(puntos.count(centro) == 0){
+					puntos[centro] = cont_id++;
+				}
+				puntos[l.inicio] = puntos[centro];
+				puntos[l.fin] = puntos[centro];
+			}
+		}
+
+		for(auto l: lineas){
+			Punto<int> p(puntos[l.inicio],puntos[l.fin]);
+			this->lineas.push_back(p);
+			llaves[p.x] = l.inicio;
+			llaves[p.y] = l.fin;
+		}
+
+
+
+
 		cout<<"Fin"<<endl;
 	}
 
@@ -120,10 +174,13 @@ public:
 		cout<<"Inicia dibujo"<<endl;
 		cout<<"Cantidad de lineas: "<<lineas.size()<<endl;
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		if(grafica_voronoi){
 			int k=0;
 			glColor(Color::verde);
-			glDraw(lineas);		
+			for(auto p: lineas){
+				glDraw(Linea<int>(llaves[p.x], llaves[p.y]));
+			}
 		}
 		if(grafica_puntos){
 			glColor(Color::rojo);

@@ -51,6 +51,11 @@ namespace _2D{
 				return *this;
 			}
 
+			template<class NuevoTipo>
+			operator Linea<NuevoTipo>()const{
+				return Linea<NuevoTipo>(Punto<NuevoTipo>(inicio),Punto<NuevoTipo>(fin));				
+			} 
+
 
 	};
 

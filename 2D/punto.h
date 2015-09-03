@@ -46,7 +46,7 @@ namespace _2D{
 			}
 
 			template<class NuevoTipo>
-			operator Punto<NuevoTipo>(){
+			operator Punto<NuevoTipo>()const{
 				return Punto<NuevoTipo>((NuevoTipo)x,(NuevoTipo)y);				
 			} 
 
