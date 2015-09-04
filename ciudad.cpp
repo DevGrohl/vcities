@@ -7,7 +7,8 @@
 #include <chrono>				  //Debugging con sleeps
 #include <thread>				  //Debugging con sleeps
 #include "owl.h"				  //Para generar los xml
-#include <unordered_map>
+#include <unordered_map>		  //
+#include "multilinea.h"			  //
 using namespace std;
 using namespace _2D;
 
@@ -65,6 +66,7 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 	return res;
 }
 
+
 //Hash para los puntos 2D
 namespace std{
 	template<>
@@ -114,8 +116,7 @@ public:
 		voronoi.calcularRegiones(true);
 		voronoi.calcular();
 		puntos=voronoi.damePuntos();
-		//Pendiente agregar las lineas de voronoi siendo recortadas
-		lineas_temp=voronoi.dameLineas();
+		lineas_temp = voronoi.dameLineas();
 		triangulacion=voronoi.dameGrafoTriangulacion();	
 		regiones = voronoi.regiones();
 		int tam = regiones.size();
@@ -146,14 +147,14 @@ public:
 				puntos[l.fin] = cont_id++;
 			}
 			int longitud = l.longitud2();
-			if( longitud< LARGO_MANZANAS*LARGO_MANZANAS or longitud < ANCHURA_MANZANAS*ANCHURA_MANZANAS){
+		/*	if( longitud< LARGO_MANZANAS*LARGO_MANZANAS or longitud < ANCHURA_MANZANAS*ANCHURA_MANZANAS){
 				Punto<int> centro = (l.inicio+l.fin)/2;
 				if(puntos.count(centro) == 0){
 					puntos[centro] = cont_id++;
 				}
 				puntos[l.inicio] = puntos[centro];
 				puntos[l.fin] = puntos[centro];
-			}
+			}*/
 		}
 
 		for(auto l: lineas){
@@ -163,6 +164,8 @@ public:
 			llaves[p.y] = l.fin;
 		}
 
+		//lineas_temp=voronoi.dameLineas();
+		
 
 
 
