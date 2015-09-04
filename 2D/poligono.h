@@ -112,6 +112,15 @@ public:
 		return s+"]";
 
 	}
+
+	std::vector<Linea<T>> lados()const{
+		std::vector<Linea<T>> lad;
+		for(int i=1;i<vertices.size();i++){
+			lad.push_back(Linea<T>(vertices[i], vertices[i-1]));
+		}
+		lad.push_back(Linea<T>(vertices[0], vertices.back()));
+		return lad;
+	}
 };
 
 }

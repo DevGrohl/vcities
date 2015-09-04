@@ -160,5 +160,10 @@ namespace _2D{
 		d = abs(A*p.x+B*p.y+C)/sqrt(A*A+B*B);
 		return d;
 	}
+
+	template<class T>
+	bool operator<(const Linea<T>& p,const Linea<T>& q ){
+		return (p.inicio == q.inicio? p.fin<q.fin : p.inicio < q.inicio);
+	}
 }
 #endif

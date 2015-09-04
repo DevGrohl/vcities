@@ -337,7 +337,7 @@ class Imagen{
 				f.put(tabla[i].size());
 			}
 			for(int i=1;i<=16;i++){
-				for(int j=0;j<tabla[i].size();j++){
+				for(unsigned j=0;j<tabla[i].size();j++){
 					f.put(tabla[i][j]);
 				}
 			}
@@ -461,7 +461,7 @@ class Imagen{
 			//Calcular la cantidad de chunks
 			int chunks_y = columnas()/8;
 			int chunks_x = filas()/8;
-			int cantidad_chunks = chunks_x*chunks_y;
+			//int cantidad_chunks = chunks_x*chunks_y;
 
 			//Se crean varios arreglos para las cadenas que seran reducidas con huffman
 			std::vector<int> cadena_YAC;
@@ -547,7 +547,7 @@ class Imagen{
 			}
 
 
-			for(int i=0;i<coeficientes_YDC.size();i++){
+			for(unsigned i=0;i<coeficientes_YDC.size();i++){
 				std::cout<<coeficientes_YDC[i]<<" ";
 			}
 			std::cout<<std::endl;
@@ -562,7 +562,7 @@ class Imagen{
 			}
 			cout<<endl;*/
 			//Los coeficientes de DC se calculan con diferencias
-			for(int i=0;i<coeficientes_YDC.size();i++){
+			for(unsigned i=0;i<coeficientes_YDC.size();i++){
 				cadena_YDC.push_back(max_bit(abs(coeficientes_YDC[i])));
 				cadena_CDC.push_back(max_bit(abs(coeficientesDCb[i])));
 				cadena_CDC.push_back(max_bit(abs(coeficientesDCr[i])));

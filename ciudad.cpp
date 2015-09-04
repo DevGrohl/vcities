@@ -7,7 +7,7 @@
 #include <chrono>				  //Debugging con sleeps
 #include <thread>				  //Debugging con sleeps
 #include "owl.h"				  //Para generar los xml
-#include <unordered_map>		  //
+#include <map>		  //
 #include "multilinea.h"			  //
 using namespace std;
 using namespace _2D;
@@ -20,7 +20,7 @@ const char * WINDOW_NAME = "VCities";
 const int ANCHURA_MANZANAS = 12;
 const int LARGO_MANZANAS = 25;
 
-vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
+vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region, map<Linea<int>, LineaMultipunto<llint>>& coleccionLineas){
 	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
 	//Algunas variables auxiliares precalculadas
 	llint base = r.base();
@@ -63,20 +63,21 @@ vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region){
 			res.push_back(i);
 		}
 	}
+
+	//Actualiza las lineas de la coleccion
+	for(auto avenida: region.lados()){
+		auto lm = coleccionLineas[Linea<int>(avenida)];
+		for(auto calle: res){
+			lm.pruebaLinea(calle);
+		}
+		coleccionLineas[Linea<int>(avenida)] = lm;
+	}
+	
 	return res;
 }
 
 
-//Hash para los puntos 2D
-namespace std{
-	template<>
-	struct hash<_2D::Punto<int>> : public __hash_base<size_t, _2D::Punto<int>>{
-   		size_t operator()(const _2D::Punto<int>& p) const{
-        	hash<string> hasher;
-        	return hasher.operator()(p.toString());
-    	}
-	};
-}
+
 
 class interfaz{
 private:
@@ -91,6 +92,7 @@ private:
 	vector<Punto<int>> lineas;		    //Lineas del diagrama
 	vector<Poligono<llint>> regiones;   //Poligonos de las regiones del diagrama de voronoi
 	map<int, Punto<int>> llaves;
+	map<Linea<int>, LineaMultipunto<llint>> coleccionAvenidas;
 
 
 public:
@@ -116,7 +118,15 @@ public:
 		voronoi.calcularRegiones(true);
 		voronoi.calcular();
 		puntos=voronoi.damePuntos();
-		lineas_temp = voronoi.dameLineas();
+
+		auto lineasvoronoi = voronoi.dameLineas();
+
+		for(auto& l: lineasvoronoi){
+			auto l2 = Linea<int>(l);
+			coleccionAvenidas[l2] = l;
+		}
+
+
 		triangulacion=voronoi.dameGrafoTriangulacion();	
 		regiones = voronoi.regiones();
 		int tam = regiones.size();
@@ -125,7 +135,7 @@ public:
 		//Calculo de los puntos internos a las regiones
 		for(auto region: regiones){
 		//	auto region = regiones[36];
-			auto temp = mallaDePuntos(region);
+			auto temp = mallaDePuntos(region,coleccionAvenidas);
 			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
 		}
 
@@ -137,7 +147,9 @@ public:
 			lineas.push_back(Linea<int>(l));
 		}
 
-		unordered_map<Punto<int>, int> puntos;
+
+
+		map<Punto<int>, int> puntos;
 		int cont_id=0;
 		for(auto l: lineas){
 			if(puntos.count(l.inicio) == 0){
@@ -146,7 +158,7 @@ public:
 			if(puntos.count(l.fin) == 0){
 				puntos[l.fin] = cont_id++;
 			}
-			int longitud = l.longitud2();
+		//	int longitud = l.longitud2();
 		/*	if( longitud< LARGO_MANZANAS*LARGO_MANZANAS or longitud < ANCHURA_MANZANAS*ANCHURA_MANZANAS){
 				Punto<int> centro = (l.inicio+l.fin)/2;
 				if(puntos.count(centro) == 0){
@@ -183,6 +195,16 @@ public:
 			glColor(Color::verde);
 			for(auto p: lineas){
 				glDraw(Linea<int>(llaves[p.x], llaves[p.y]));
+			}
+
+		}
+		{
+			int k=0;	
+			for(auto av: coleccionAvenidas){
+				for(auto s: av.second.segmentos){
+					glColor(Color::hsl(k++*17));
+					glDraw(s);
+				}
 			}
 		}
 		if(grafica_puntos){

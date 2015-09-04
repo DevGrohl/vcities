@@ -196,6 +196,7 @@ std::ostream& operator<<(std::ostream& s,const Color& c){
 		s.put(c.g);
 		s.put(c.r);
 	}
+	return s;
 }
 
 Color max(const Color& a,const Color& b){
