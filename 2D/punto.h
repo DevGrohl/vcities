@@ -46,7 +46,7 @@ namespace _2D{
 			}
 
 			template<class NuevoTipo>
-			operator Punto<NuevoTipo>(){
+			operator Punto<NuevoTipo>()const{
 				return Punto<NuevoTipo>((NuevoTipo)x,(NuevoTipo)y);				
 			} 
 
@@ -149,6 +149,10 @@ namespace _2D{
 		return (b.y-a.y)/(b.x-a.x)==(c.y-b.y)/(c.x-b.x);
 	}
 
+	template<class T>
+	bool operator<(const Punto<T>& p, const Punto<T>& q){
+		return p.x==q.x ? p.y<q.y: p.x<q.x;
+	}
 
 }
 

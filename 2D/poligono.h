@@ -27,6 +27,11 @@ public:
 	int tam() const{
 		return vertices.size();
 	}
+
+	int cantLados() const{
+		return vertices.size();
+	}
+
 	const Punto<T> operator[](int i)const {
 		return vertices[i];
 	}
@@ -43,10 +48,10 @@ public:
 	Rectangulo<T> rectanguloRecubridor()const{
 		Rectangulo<T> resultado(vertices[0],vertices[0]);
 		for(auto p: vertices){
-			resultado.inicio.x = min(resultado.inicio.x,p.x);
-			resultado.inicio.y = min(resultado.inicio.y,p.y);
-			resultado.fin.x = max(resultado.fin.x,p.x);
-			resultado.fin.y = max(resultado.fin.y,p.y);
+			resultado.inicio.x = std::min(resultado.inicio.x,p.x);
+			resultado.inicio.y = std::min(resultado.inicio.y,p.y);
+			resultado.fin.x = std::max(resultado.fin.x,p.x);
+			resultado.fin.y = std::max(resultado.fin.y,p.y);
 		}
 		return resultado;
 	}
@@ -75,13 +80,46 @@ public:
 		return resultado;
 	}
 
-	bool contiene(const Punto<T>& p){
+	bool contiene(const Punto<T>& p) const{
 		for(int i=1;i<tam();i++){
-			if(ccw(p,vertices[i-1], vertices[i])<0){
+			T res = ccw(p,vertices[i-1], vertices[i]);
+			if(res<0 and std::isfinite(res)){
 				return false;
 			}
 		}
-		return true;
+		T res = ccw(p,vertices[0], vertices[vertices.size()-1]);
+		return res<0 and std::isfinite(res);
+	}
+
+	bool contiene(const Linea<T>& l) const{
+		return contiene(l.inicio) and contiene(l.fin);
+	}
+
+	Punto<T> puntoInterseccion(const Linea<T>& l)const{
+		for(int i=1;i<vertices.size();i++){
+			if(l.colisiona(Linea<T>(vertices[i], vertices[i-1]))){
+				return interseccion(l, Linea<T>(vertices[i], vertices[i-1]) );
+			}
+		}
+		return interseccion(l, Linea<T>(vertices[0], vertices[vertices.size()-1]));
+	}
+
+	std::string toString(){
+		std::string s="[Poligono:"+vertices[0].toString();
+		for(int i=1;i<vertices.size();i++){
+			s+=std::string(",")+vertices[i].toString();
+		}
+		return s+"]";
+
+	}
+
+	std::vector<Linea<T>> lados()const{
+		std::vector<Linea<T>> lad;
+		for(int i=1;i<vertices.size();i++){
+			lad.push_back(Linea<T>(vertices[i], vertices[i-1]));
+		}
+		lad.push_back(Linea<T>(vertices[0], vertices.back()));
+		return lad;
 	}
 };
 

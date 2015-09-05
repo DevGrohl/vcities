@@ -5,14 +5,14 @@
 
 #ifdef PUNTO2D_H
 template<class T>
-string owl(const _2D::Punto<T> p){
-	return "<punto d=\"2\" x=\""+to_string(p.x)+"\" y=\""+to_string(p.y)+"\"/>";
+std::string owl(const _2D::Punto<T> p){
+	return "<punto d=\"2\" x=\""+std::to_string(p.x)+"\" y=\""+std::to_string(p.y)+"\"/>";
 }
 #endif
 
 #ifdef LINEA2D_H
 template<class T>
-string owl(const _2D::Linea<T> l){
+std::string owl(const _2D::Linea<T> l){
 	return "<linea d=\"2\" >\n\t" + owl(l.inicio) +"\n\t"+owl(l.fin)+"\n</linea>";
 }
 #endif
@@ -20,8 +20,8 @@ string owl(const _2D::Linea<T> l){
 #ifdef POLIGONO_H
 
 template<class T>
-string owl(const _2D::Poligono<T> p){
-	string resultado = "<poligono d\"=2\">";
+std::string owl(const _2D::Poligono<T> p){
+	std::string resultado = "<poligono d\"=2\">";
 	for(auto v: p.vertices){
 		resultado+=owl(v)+"\n";
 	}

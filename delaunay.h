@@ -10,7 +10,7 @@
 namespace std{
 	template<>
 	struct hash<_3D::Punto<int>> : public __hash_base<size_t, _3D::Punto<int>>{
-   		size_t operator()(const _3D::Punto<int>& p) const{
+		size_t operator()(const _3D::Punto<int>& p) const{
         	hash<string> hasher;
         	return hasher.operator ()(p.toString());
     	}
@@ -30,9 +30,8 @@ private:
 		_2D::Circulo<T> c(puntos[i],puntos[j],puntos[k]);
 		_2D::Punto<T> centro = c.centro;
 		T dist = c.radio2();
-		double area = _2D::Triangulo<T>(puntos[i],puntos[j],puntos[k]).area();
 		//std::cout<<c.toString()<<" "<<area<<std::endl;
-		if(colineares(puntos[i],puntos[j],puntos[k]) or not isfinite(c.radio)){
+		if(colineares(puntos[i],puntos[j],puntos[k]) or not std::isfinite(c.radio)){
 			return;
 		}
 		for(int w = 0; w < puntos.size(); w++){
@@ -97,7 +96,7 @@ public:
 
 	//Retorna un grafo que 
 	std::vector<std::vector<bool>> grafoDeTriangulos(){
-		std::vector<std::vector<bool>> grafo(puntos.size(),vector<bool>(puntos.size()));
+		std::vector<std::vector<bool>> grafo(puntos.size(),std::vector<bool>(puntos.size()));
 		for(auto t: triangulitos){
 			grafo[t.x][t.y] = true;
 			grafo[t.x][t.z] = true;

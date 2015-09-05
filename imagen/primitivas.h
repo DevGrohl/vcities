@@ -221,7 +221,6 @@ namespace primitivas{
 	}
 
 	void estrella(Imagen& M, int x, int y, int r, double ang, int l, const Color& c){
-		int h, k;
 		int p, q;
 		int s, t;
 		s=(int)floor(double(r)*cos(M_PI/l+ang)/2);
@@ -233,8 +232,6 @@ namespace primitivas{
 			s=(int)floor(r*cos((2.0*i+1.0)*M_PI/l+ang)/2);
 			t=(int)floor(r*sin((2.0*i+1.0)*M_PI/l+ang)/2);
 			linea(M,s+x, t+y, p+x, q+y,c);
-			h=p;
-			k=q;
 		}
 	}
 	

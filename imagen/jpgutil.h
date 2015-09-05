@@ -30,7 +30,7 @@ private:
 public:
 	Matrix8x8(){
 		datos = new float[64];
-		memset(datos,0,sizeof(datos));
+		memset(datos,0,sizeof(float) * 64);
 	}
 
 	const float* operator[](int i) const{

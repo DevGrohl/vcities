@@ -27,6 +27,9 @@ namespace _2D{
 				return inicio.toString()+std::string("->")+fin.toString();
 			}			
 			bool colisiona(const Linea<T>& b)const {
+				return (ccw(inicio,fin,b.inicio) * ccw(inicio, fin, b.fin) < 0) and (ccw(b.inicio, b.fin, inicio)*ccw(b.inicio, b.fin, fin)<0);
+			}
+			bool colisionaBordes(const Linea<T>& b)const {
 				return (ccw(inicio,fin,b.inicio) * ccw(inicio, fin, b.fin) <= 0) and (ccw(b.inicio, b.fin, inicio)*ccw(b.inicio, b.fin, fin)<=0);
 			}
 			Linea bisector(const T& x1, const T& x2)const{
@@ -48,18 +51,24 @@ namespace _2D{
 				return *this;
 			}
 
+			template<class NuevoTipo>
+			operator Linea<NuevoTipo>()const{
+				return Linea<NuevoTipo>(Punto<NuevoTipo>(inicio),Punto<NuevoTipo>(fin));				
+			} 
+
 
 	};
 
-	Punto<double> interseccion(const Linea<double>& a,const Linea<double>& b){
-		double A1, B1, C1, dx1, dy1;
+	template<class T>
+	Punto<T> interseccion(const Linea<T>& a,const Linea<T>& b){
+		T A1, B1, C1, dx1, dy1;
 		dx1 = a.fin.x-a.inicio.x;
 		dy1 = a.fin.y-a.inicio.y;
 		A1 = dy1;
 		B1 = -dx1;
 		C1 = a.inicio.y*dx1-a.inicio.x*dy1;
 
-		double A2, B2, C2, dx2, dy2;
+		T A2, B2, C2, dx2, dy2;
 		dx2 = b.fin.x-b.inicio.x;
 		dy2 = b.fin.y-b.inicio.y;
 		A2 = dy2;
@@ -68,10 +77,10 @@ namespace _2D{
 
 		//A1x + B1y = -C1x
 		//A2x + B2y = -C2x
-		double Dg = A1*B2-A2*B1;
-		double Dx = -B1*C2+C1*B2;
-		double Dy = -A1*C2+C1*A2;
-		return Punto<double>(-Dx/Dg,Dy/Dg);
+		T Dg = A1*B2-A2*B1;
+		T Dx = -B1*C2+C1*B2;
+		T Dy = -A1*C2+C1*A2;
+		return Punto<T>(-Dx/Dg,Dy/Dg);
 	}
 	
 	template<class T>
@@ -150,6 +159,11 @@ namespace _2D{
 		C = l.inicio.y*dx-l.inicio.x*dy;
 		d = abs(A*p.x+B*p.y+C)/sqrt(A*A+B*B);
 		return d;
+	}
+
+	template<class T>
+	bool operator<(const Linea<T>& p,const Linea<T>& q ){
+		return (p.inicio == q.inicio? p.fin<q.fin : p.inicio < q.inicio);
 	}
 }
 #endif
