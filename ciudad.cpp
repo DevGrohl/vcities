@@ -7,7 +7,8 @@
 #include <chrono>				  //Debugging con sleeps
 #include <thread>				  //Debugging con sleeps
 #include "owl.h"				  //Para generar los xml
-#include <map>		  //
+#include <map>		  			  //
+#include "avenida.h"
 #include "multilinea.h"			  //
 using namespace std;
 using namespace _2D;
@@ -19,6 +20,11 @@ const int SCREEN_Y = 1000;
 const char * WINDOW_NAME = "VCities";
 const int ANCHURA_MANZANAS = 12;
 const int LARGO_MANZANAS = 25;
+const int AVENIDAS_VER = 3;
+const int AVENIDAS_HOR = 3;
+const double ROTACION_MAXIMA  = M_PI/15.0;
+const int ITERACIONES_AVENIDA = 3;
+
 
 vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region, map<Linea<int>, LineaMultipunto<llint>>& coleccionLineas){
 	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
@@ -93,7 +99,7 @@ private:
 	vector<Poligono<llint>> regiones;   //Poligonos de las regiones del diagrama de voronoi
 	map<int, Punto<int>> llaves;
 	map<Linea<int>, LineaMultipunto<llint>> coleccionAvenidas;
-
+	vector<Avenida> avenidas;
 
 public:
 	bool grafica_puntos;
@@ -137,6 +143,13 @@ public:
 		//	auto region = regiones[36];
 			auto temp = mallaDePuntos(region,coleccionAvenidas);
 			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
+		}
+
+		for(int i=0;i<AVENIDAS_HOR;i++){
+			avenidas.push_back(Avenida(Punto<double>(0,random()%SCREEN_Y), Punto<double>(SCREEN_X,random()%SCREEN_Y), ITERACIONES_AVENIDA, ROTACION_MAXIMA));
+		}
+		for(int i=0;i<AVENIDAS_VER;i++){
+			avenidas.push_back(Avenida(Punto<double>(random()%SCREEN_X,0), Punto<double>(random()%SCREEN_X,SCREEN_Y), ITERACIONES_AVENIDA, ROTACION_MAXIMA));
 		}
 
 		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
@@ -232,7 +245,10 @@ public:
 		//	this_thread::sleep_for(chrono::seconds(1));
 		}
 		*/
-		
+		for(auto& av : avenidas){
+			av.dibujar(3);
+		}
+	
 		
 		glutSwapBuffers();
 		glFlush();
