@@ -1,4 +1,7 @@
+#ifndef AVENIDA_H
+#define AVENIDA_H 
 #include "geometria.h"
+#include "multilinea.h"
 #include <vector>
 
 class Avenida{
@@ -40,6 +43,14 @@ public:
 		}
 	}
 
+	std::vector<LineaMultipunto<double>> multilineas(){
+		std::vector<LineaMultipunto<double>> v;
+		for(unsigned i = 1; i < lineas.size(); i++){
+			v.push_back(LineaMultipunto<double>(_2D::Linea<double>(lineas[i-1], lineas[i])));
+		}
+		return v;
+	}
+
 	void dibujar(int w){
 		glColor(Color::blanco);
 		glLineWidth(w);
@@ -52,3 +63,5 @@ public:
 		glLineWidth(1);
 	}
 }; 
+
+#endif

@@ -23,7 +23,7 @@ namespace _2D{
 			Linea operator/(T d) const;
 			Linea operator/=(T d);
 			Linea operator+(const Punto<T>& d) const;
-			std::string toString()const{
+			virtual std::string toString()const{
 				return inicio.toString()+std::string("->")+fin.toString();
 			}			
 			bool colisiona(const Linea<T>& b)const {
@@ -80,6 +80,9 @@ namespace _2D{
 		T Dg = A1*B2-A2*B1;
 		T Dx = -B1*C2+C1*B2;
 		T Dy = -A1*C2+C1*A2;
+		if(Dg == 0){
+			return Punto<T>();
+		}
 		return Punto<T>(-Dx/Dg,Dy/Dg);
 	}
 	

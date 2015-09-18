@@ -152,6 +152,17 @@ public:
 			avenidas.push_back(Avenida(Punto<double>(random()%SCREEN_X,0), Punto<double>(random()%SCREEN_X,SCREEN_Y), ITERACIONES_AVENIDA, ROTACION_MAXIMA));
 		}
 
+		for(auto& avenida: avenidas){
+			vector<LineaMultipunto<double>> multilineas = avenida.multilineas();
+			for(auto& ml : multilineas){
+				ml.pruebaLineaCorte(lineas_temp);
+				lineas_temp.insert(lineas_temp.begin(),ml.segmentos.begin(),ml.segmentos.end());
+			}
+		}
+		
+		avenidas.clear();
+
+
 		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
 		//El punto intermedio C y se intercambian los valores de A y B en las demas lineas por C. 
 		//Trunca los valores reales para asi trabajar con enteros
