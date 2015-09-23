@@ -10,6 +10,7 @@
 #include <map>		  			  //
 #include "avenida.h"
 #include "multilinea.h"			  //
+#include "ciudad.h"
 using namespace std;
 using namespace _2D;
 
@@ -26,205 +27,38 @@ const double ROTACION_MAXIMA  = M_PI/15.0;
 const int ITERACIONES_AVENIDA = 3;
 
 
-vector<Linea<llint>> mallaDePuntos(const Poligono<llint>& region, map<Linea<int>, LineaMultipunto<llint>>& coleccionLineas){
-	RectanguloGirado<llint> r = region.rectanguloRecubridorMinimo();
-	//Algunas variables auxiliares precalculadas
-	llint base = r.base();
-	llint altura = r.altura();
-	llint angulo = -r.angulo();
-	//Se barre la matriz de punto base x altura
-	vector<Linea<llint>> res, l;
-	for(llint y = 0; y-LARGO_MANZANAS<altura; y+=LARGO_MANZANAS){
-		for(llint x= ANCHURA_MANZANAS; x-LARGO_MANZANAS<base; x+= ANCHURA_MANZANAS){		
-			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x+ANCHURA_MANZANAS,-y));
-			li.inicio = li.inicio.rotar(-angulo);
-			li.fin = li.fin.rotar(-angulo);
-			li+=r.p4;
-			l.push_back(li);
-		}
-	}
-
-	for(llint x = 0; x- ANCHURA_MANZANAS <base; x+=ANCHURA_MANZANAS){
-		for(llint y = LARGO_MANZANAS; y-LARGO_MANZANAS<altura; y+=LARGO_MANZANAS){		
-			Linea<llint> li (Punto<llint>(-x,-y),Punto<llint>(-x,-y+LARGO_MANZANAS));
-			li.inicio = li.inicio.rotar(-angulo);
-			li.fin = li.fin.rotar(-angulo);
-			li+=r.p4;
-			l.push_back(li);
-		}
-	}
-	
-
-	//Filtra las lineas que quedan fuera del poligono y recorta aquellas que estan sobre el contorno
-	for(auto i: l){
-		bool contiene_ini = region.contiene(i.inicio);
-		bool contiene_fin = region.contiene(i.fin);
-		if(contiene_ini and contiene_fin){
-			res.push_back(i);
-		}else if(contiene_fin){
-			i.inicio = region.puntoInterseccion(i);
-			res.push_back(i);
-		}else if(contiene_ini){
-			i.fin = region.puntoInterseccion(i);
-			res.push_back(i);
-		}
-	}
-
-	//Actualiza las lineas de la coleccion
-	for(auto avenida: region.lados()){
-		auto lm = coleccionLineas[Linea<int>(avenida)];
-		for(auto calle: res){
-			lm.pruebaLinea(calle);
-		}
-		coleccionLineas[Linea<int>(avenida)] = lm;
-	}
-	
-	return res;
-}
-
-
 
 
 class interfaz{
 private:
-	//Datos de entrada
-	Punto<int> tam;
-	Punto<int> tamMat;
-	Voronoi<llint> voronoi;
-	vector<Punto<llint>> puntos; //Puntos generados
-
-	//resultados
-	vector<vector<bool>> triangulacion; //Grafo que representa 2 puntos deben conectarse segun la triangulacion de delaunay
-	vector<Punto<int>> lineas;		    //Lineas del diagrama
-	vector<Poligono<llint>> regiones;   //Poligonos de las regiones del diagrama de voronoi
-	map<int, Punto<int>> llaves;
-	map<Linea<int>, LineaMultipunto<llint>> coleccionAvenidas;
-	vector<Avenida> avenidas;
+	
 
 public:
 	bool grafica_puntos;
 	bool grafica_voronoi;
-	interfaz(){	
-	}
-	interfaz(int x, int y, int n, int m){
+	Ciudad ciudad;
+	interfaz(int x, int y, int n, int m):ciudad(x, y, n, m, ANCHURA_MANZANAS,LARGO_MANZANAS, AVENIDAS_HOR, AVENIDAS_VER, ITERACIONES_AVENIDA, ROTACION_MAXIMA){
 		grafica_voronoi  = grafica_puntos = true;
-		tam = Punto<int>(x,y);
-		tamMat = Punto<int>(n,m);
-		int dx = x/n;
-		int dy = y/m;
-		vector<Linea<llint>> lineas_temp;
-
-		//Generacion de los puntos aleatorios
-		for(int i=0;i<n;i++){
-			for(int j=0;j<m;j++){
-				voronoi.agregaPunto(Punto<llint>(dx*i+rand()%dx,dy*j+rand()%dy));
-			}
-		}
-
-		voronoi.calcularRegiones(true);
-		voronoi.calcular();
-		puntos=voronoi.damePuntos();
-
-		auto lineasvoronoi = voronoi.dameLineas();
-
-		for(auto& l: lineasvoronoi){
-			auto l2 = Linea<int>(l);
-			coleccionAvenidas[l2] = l;
-		}
-
-
-		triangulacion=voronoi.dameGrafoTriangulacion();	
-		regiones = voronoi.regiones();
-		int tam = regiones.size();
-		int i=0;
-
-		//Calculo de los puntos internos a las regiones
-		for(auto region: regiones){
-		//	auto region = regiones[36];
-			auto temp = mallaDePuntos(region,coleccionAvenidas);
-			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
-		}
-
-		for(int i=0;i<AVENIDAS_HOR;i++){
-			avenidas.push_back(Avenida(Punto<double>(0,random()%SCREEN_Y), Punto<double>(SCREEN_X,random()%SCREEN_Y), ITERACIONES_AVENIDA, ROTACION_MAXIMA));
-		}
-		for(int i=0;i<AVENIDAS_VER;i++){
-			avenidas.push_back(Avenida(Punto<double>(random()%SCREEN_X,0), Punto<double>(random()%SCREEN_X,SCREEN_Y), ITERACIONES_AVENIDA, ROTACION_MAXIMA));
-		}
-
-		for(auto& avenida: avenidas){
-			vector<LineaMultipunto<double>> multilineas = avenida.multilineas();
-			for(auto& ml : multilineas){
-				ml.pruebaLineaCorte(lineas_temp);
-				lineas_temp.insert(lineas_temp.begin(),ml.segmentos.begin(),ml.segmentos.end());
-			}
-		}
 		
-		avenidas.clear();
-
-
-		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
-		//El punto intermedio C y se intercambian los valores de A y B en las demas lineas por C. 
-		//Trunca los valores reales para asi trabajar con enteros
-		vector<Linea<int>> lineas;
-		for(auto& l: lineas_temp){
-			lineas.push_back(Linea<int>(l));
-		}
-
-
-
-		map<Punto<int>, int> puntos;
-		int cont_id=0;
-		for(auto l: lineas){
-			if(puntos.count(l.inicio) == 0){
-				puntos[l.inicio] = cont_id++;
-			}
-			if(puntos.count(l.fin) == 0){
-				puntos[l.fin] = cont_id++;
-			}
-		//	int longitud = l.longitud2();
-		/*	if( longitud< LARGO_MANZANAS*LARGO_MANZANAS or longitud < ANCHURA_MANZANAS*ANCHURA_MANZANAS){
-				Punto<int> centro = (l.inicio+l.fin)/2;
-				if(puntos.count(centro) == 0){
-					puntos[centro] = cont_id++;
-				}
-				puntos[l.inicio] = puntos[centro];
-				puntos[l.fin] = puntos[centro];
-			}*/
-		}
-
-		for(auto l: lineas){
-			Punto<int> p(puntos[l.inicio],puntos[l.fin]);
-			this->lineas.push_back(p);
-			llaves[p.x] = l.inicio;
-			llaves[p.y] = l.fin;
-		}
-
-		//lineas_temp=voronoi.dameLineas();
-		
-
-
-
-		cout<<"Fin"<<endl;
 	}
 
 
 	void dibujar(){
 		cout<<"Inicia dibujo"<<endl;
-		cout<<"Cantidad de lineas: "<<lineas.size()<<endl;
+		cout<<"Cantidad de lineas: "<<ciudad.lineas.size()<<endl;
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		if(grafica_voronoi){
 			int k=0;
 			glColor(Color::verde);
-			for(auto p: lineas){
-				glDraw(Linea<int>(llaves[p.x], llaves[p.y]));
+			for(auto p: ciudad.lineas){
+				glDraw(Linea<int>(ciudad.llaves[p.x], ciudad.llaves[p.y]));
 			}
 
 		}
 		{
 			int k=0;	
-			for(auto av: coleccionAvenidas){
+			for(auto av: ciudad.coleccionAvenidas){
 				for(auto s: av.second.segmentos){
 					glColor(Color::hsl(k++*17));
 					glDraw(s);
@@ -233,7 +67,7 @@ public:
 		}
 		if(grafica_puntos){
 			glColor(Color::rojo);
-			glDraw(puntos,5);
+			glDraw(ciudad.puntos,5);
 		}
 		
 		//Debugg de los rectangulos sobre las regiones
@@ -256,9 +90,9 @@ public:
 		//	this_thread::sleep_for(chrono::seconds(1));
 		}
 		*/
-		for(auto& av : avenidas){
+		/*for(auto& av : avenidas){
 			av.dibujar(3);
-		}
+		}*/
 	
 		
 		glutSwapBuffers();
@@ -266,11 +100,11 @@ public:
 	}
 };
 
-interfaz vs;
+interfaz *vs;
 
 void renderFunction(){
 	glClear(GL_COLOR_BUFFER_BIT); 
-	vs.dibujar();
+	vs->dibujar();
 	glFlush();
 	glutSwapBuffers();
 }
@@ -278,10 +112,10 @@ void renderFunction(){
 void eventoTeclado(unsigned char k, int x, int y){
 	switch(k){
 		case 'p':
-			vs.grafica_puntos^=true;
+			vs->grafica_puntos^=true;
 			break;
 		case 'v':
-			vs.grafica_voronoi^=true;
+			vs->grafica_voronoi^=true;
 			break;
 	}
 	glutPostRedisplay();
@@ -301,7 +135,7 @@ int main(int argc, char** argv){
 	glutDisplayFunc(renderFunction); 
 	glutKeyboardFunc(eventoTeclado); 
 	srand(time(NULL));
-	vs = interfaz(SCREEN_X,SCREEN_Y,15,15);
+	vs = new interfaz(SCREEN_X,SCREEN_Y,15,15);
 	glutMainLoop(); 
 	return 0; 
 } 

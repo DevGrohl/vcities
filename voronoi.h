@@ -1,3 +1,5 @@
+#ifndef VORONOI_H
+#define VORONOI_H value
 #include "imagen/imagen.h"        //Exportacion de resultados
 #include "delaunay.h"   	   	  //Para calcular triangulacionaciones
 #include "geometria.h"			  //Operaciones con puntos
@@ -179,3 +181,4 @@ public:
 		return regiones_;
 	}
 };
+#endif

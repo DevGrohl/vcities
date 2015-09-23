@@ -53,7 +53,7 @@ public:
 				}
 			}else if(this->colisionaBordes(v[k])){
 				//Partir la linea que choca
-				std::cout<<":vv"<<std::endl;
+				//std::cout<<":vv"<<std::endl;
 				unsigned tam = segmentos.size();
 				for(unsigned i=0;i<tam;i++){
 					if(v[k].colisionaBordes(segmentos[i])){
