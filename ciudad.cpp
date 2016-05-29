@@ -42,6 +42,8 @@ public:
 		
 	}
 
+	interfaz(const string& file):ciudad(file){
+	}
 
 	void dibujar(){
 		cout<<"Inicia dibujo"<<endl;
@@ -98,6 +100,10 @@ public:
 		glutSwapBuffers();
 		glFlush();
 	}
+
+	void guardaOntologia(const string& nombre){
+		ciudad.guardaOntologia(nombre);
+	}
 };
 
 interfaz *vs;
@@ -135,7 +141,12 @@ int main(int argc, char** argv){
 	glutDisplayFunc(renderFunction); 
 	glutKeyboardFunc(eventoTeclado); 
 	srand(time(NULL));
-	vs = new interfaz(SCREEN_X,SCREEN_Y,15,15);
+	if(argc == 1){	
+		vs = new interfaz(SCREEN_X,SCREEN_Y,15,15);
+		vs->guardaOntologia("ontologia_prueba.owl");
+	}else{
+		vs = new interfaz(argv[1]);
+	}
 	glutMainLoop(); 
 	return 0; 
 } 

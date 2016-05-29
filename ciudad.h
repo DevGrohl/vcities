@@ -78,7 +78,7 @@ public:
 
 	//resultados
 	std::vector<std::vector<bool>> triangulacion; //Grafo que representa 2 puntos deben conectarse segun la triangulacion de delaunay
-	std::vector<_2D::Punto<int>> lineas;		    //Lineas del diagrama
+	std::vector<_2D::Punto<int>> lineas;		   //Lineas del diagrama
 	std::vector<_2D::Poligono<double>> regiones;   //Poligonos de las regiones del diagrama de voronoi
 	std::map<int, _2D::Punto<int>> llaves;
 	std::map<_2D::Linea<int>, LineaMultipunto<double>> coleccionAvenidas;
@@ -127,6 +127,11 @@ public:
 			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
 		}
 
+		for(auto region: regiones){
+			auto temp = region.lados();
+			lineas_temp.insert(lineas_temp.end(),temp.begin(), temp.end());
+		}
+
 		//Se crean las avenidas
 		for(int i=0;i<avenidas_hor;i++){
 			avenidas.push_back(Avenida(_2D::Punto<double>(0,random()%y), _2D::Punto<double>(x,random()%y), iteracionesAvenida, rotacionMaxima));
@@ -146,6 +151,7 @@ public:
 		
 		//Una vez que fueron calculadas las avenidas y movidas al vector principal pueden ser eliminadas
 		avenidas.clear();
+
 
 
 		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
@@ -193,6 +199,52 @@ public:
 
 
 		std::cout<<"Fin"<<std::endl;
+	}
+
+	void guardaOntologia(const std::string& nombre){
+		/*
+			El archivo tiene 2 segmentos para describir la geometria de las calles de la ciudad:
+			1.- Un conjunto de puntos (x,y) que representan cruces 
+			2.- Un conjunto de pares (a,b) que indican que el cruce con el id a esta conectado con el
+				cruce con el id b
+
+			Los id de los cruces no estan escritos en el archivo, pero son secuenciales en el orden de 
+				aparicion de los mismos dentro del archivo. 
+		*/
+
+		std::ofstream arch(nombre);
+		arch<<llaves.size()<<std::endl;
+		for(auto p: llaves){
+			arch<<p.second.x<<" "<<p.second.y<<std::endl;
+		}
+		
+		arch<<lineas.size()<<std::endl;
+		for(auto p: lineas){
+			arch<<p.x<<" "<<p.y<<std::endl;
+		}
+		arch.close();
+	}
+
+	void cargaOntologia(const std::string& nombre){
+		std::ifstream arch(nombre);
+		int n;
+		arch>>n;
+		for(int i=0;i<n;i++){
+			double x, y;
+			arch>>x>>y;
+			llaves[i] = _2D::Punto<double>(x,y);
+		}
+
+		arch>>n;
+		for(int i=0;i<n;i++){
+			int a, b;
+			arch>>a>>b;
+			lineas.push_back(_2D::Punto<int>(a,b));
+		}
+	}
+
+	Ciudad(const std::string& file){
+		cargaOntologia(file);
 	}
 };
 
