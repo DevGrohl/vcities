@@ -26,12 +26,8 @@ const int AVENIDAS_HOR = 3;
 const double ROTACION_MAXIMA  = M_PI/15.0;
 const int ITERACIONES_AVENIDA = 3;
 
-
-
-
 class interfaz{
 private:
-	
 
 public:
 	bool grafica_puntos;
@@ -39,11 +35,9 @@ public:
 	Ciudad ciudad;
 	interfaz(int x, int y, int n, int m):ciudad(x, y, n, m, ANCHURA_MANZANAS,LARGO_MANZANAS, AVENIDAS_HOR, AVENIDAS_VER, ITERACIONES_AVENIDA, ROTACION_MAXIMA){
 		grafica_voronoi  = grafica_puntos = true;
-		
 	}
 
-	interfaz(const string& file):ciudad(file){
-	}
+	interfaz(const string& file):ciudad(file){}
 
 	void dibujar(){
 		cout<<"Inicia dibujo"<<endl;
@@ -59,7 +53,7 @@ public:
 
 		}
 		{
-			int k=0;	
+			int k=0;
 			for(auto av: ciudad.coleccionAvenidas){
 				for(auto s: av.second.segmentos){
 					glColor(Color::hsl(k++*17));
@@ -71,32 +65,7 @@ public:
 			glColor(Color::rojo);
 			glDraw(ciudad.puntos,5);
 		}
-		
-		//Debugg de los rectangulos sobre las regiones
-		/*
-		int k=0;
-		Imagen I;
-		glReadPixels(I);
-		for(auto region: regiones){
-			glDrawPixels(I);
-			glColor(Color::azul);
-			glDraw(region);		
-			glColor(Color::magenta);
-			glDraw(region.rectanguloRecubridorMinimo());
-			glutSwapBuffers();
-			glFlush();
-			int x;
-			cin>>x;
-			if(x)
-				cout<<region.toString()<<endl;
-		//	this_thread::sleep_for(chrono::seconds(1));
-		}
-		*/
-		/*for(auto& av : avenidas){
-			av.dibujar(3);
-		}*/
-	
-		
+
 		glutSwapBuffers();
 		glFlush();
 	}
@@ -109,7 +78,7 @@ public:
 interfaz *vs;
 
 void renderFunction(){
-	glClear(GL_COLOR_BUFFER_BIT); 
+	glClear(GL_COLOR_BUFFER_BIT);
 	vs->dibujar();
 	glFlush();
 	glutSwapBuffers();
@@ -118,37 +87,35 @@ void renderFunction(){
 void eventoTeclado(unsigned char k, int x, int y){
 	switch(k){
 		case 'p':
-			vs->grafica_puntos^=true;
-			break;
+		vs->grafica_puntos^=true;
+		break;
 		case 'v':
-			vs->grafica_voronoi^=true;
-			break;
+		vs->grafica_voronoi^=true;
+		break;
 	}
 	glutPostRedisplay();
 }
 
-int main(int argc, char** argv){ 
-	glutInit(&argc,argv); 
-	glutInitDisplayMode(GLUT_DOUBLE); 
-	glutInitWindowSize(SCREEN_X,SCREEN_Y); 
-	glutInitWindowPosition(0,0); 
-	glutCreateWindow(WINDOW_NAME); 
-	glClearColor(0, 0,0, 0.0); 
-	glMatrixMode(GL_PROJECTION); 
-	glClear(GL_COLOR_BUFFER_BIT); 
-	gluOrtho2D(0, SCREEN_X, 0,SCREEN_Y); 
-	glFlush(); 
-	glutDisplayFunc(renderFunction); 
-	glutKeyboardFunc(eventoTeclado); 
+int main(int argc, char** argv){
+	glutInit(&argc,argv);
+	glutInitDisplayMode(GLUT_DOUBLE);
+	glutInitWindowSize(SCREEN_X,SCREEN_Y);
+	glutInitWindowPosition(0,0);
+	glutCreateWindow(WINDOW_NAME);
+	glClearColor(0, 0,0, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	glClear(GL_COLOR_BUFFER_BIT);
+	gluOrtho2D(0, SCREEN_X, 0,SCREEN_Y);
+	glFlush();
+	glutDisplayFunc(renderFunction);
+	glutKeyboardFunc(eventoTeclado);
 	srand(time(NULL));
-	if(argc == 1){	
+	if(argc == 1){
 		vs = new interfaz(SCREEN_X,SCREEN_Y,15,15);
 		vs->guardaOntologia("ontologia_prueba.owl");
 	}else{
 		vs = new interfaz(argv[1]);
 	}
-	glutMainLoop(); 
-	return 0; 
-} 
-
-
+	glutMainLoop();
+	return 0;
+}

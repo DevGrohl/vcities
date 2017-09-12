@@ -1,6 +1,7 @@
 #ifndef HUFFMAN_H
-#define HUFFMAN_H 
+#define HUFFMAN_H
 #include <iostream>
+#include <vector>
 #include <map>
 #include "heap.h"
 
@@ -16,7 +17,7 @@ class NodoHuffman{
 		NodoHuffman* izq;
 		NodoHuffman* der;
 		int repeticiones;
-	
+
 	NodoHuffman():letra(){
 		izq = ArbolVacio;
 		der = ArbolVacio;

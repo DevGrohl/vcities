@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <typeinfo>
 #include <cmath>
 
 class Color{
@@ -10,11 +11,11 @@ class Color{
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
-		
+
 		Color(){
 			r=g=b=0;
 		}
-		
+
 		Color(unsigned char x,unsigned char y,unsigned char z){
 			r=x;
 			g=y;
@@ -59,7 +60,7 @@ class Color{
 				bn=0;
 			return Color(rn, gn, bn);
 		}
-		
+
 		inline bool operator==(const Color& o)const {
 			return r==o.r and g==o.g and b==o.b;
 		}
@@ -97,7 +98,7 @@ class Color{
 		unsigned char luz()const{
 			return (unsigned char)(0.30*r + 0.59*g + 0.11*b);
 		}
-	
+
 		static Color hsl(int ang){
 			int r, g, b;
 			ang=(ang+360)%360;
@@ -169,33 +170,32 @@ const Color Color::cafe=Color(153,76,0);
 const Color Color::rosa=Color(255,153,204);
 
 std::istream& operator>>(std::istream& s, Color& c){
-	if(s==std::cin){
-		int r,g,b;
-		std::cin>>r;
-		std::cin>>g;
-		std::cin>>b;
-		c.r=r;
-		c.g=g;
-		c.b=b;
-		
-	}else{
-		c.b=s.get();
-		c.g=s.get();
-		c.r=s.get();
-	}
+	// if(s==std::cin){
+	// 	int r,g,b;
+	// 	std::cin>>r;
+	// 	std::cin>>g;
+	// 	std::cin>>b;
+	// 	c.r=r;
+	// 	c.g=g;
+	// 	c.b=b;
+	//
+	// }else{
+	// 	c.b=s.get();
+	// 	c.g=s.get();
+	// 	c.r=s.get();
+	// }
 	return s;
 }
 
-
-
 std::ostream& operator<<(std::ostream& s,const Color& c){
-	if(s==std::cout){
-		std::cout<<"("<<(int)c.r<<","<<(int)c.g<<","<<(int)c.b<<")";
-	}else{
-		s.put(c.b);
-		s.put(c.g);
-		s.put(c.r);
-	}
+
+	// if(s==std::cout){
+	// 	std::cout<<"("<<(int)c.r<<","<<(int)c.g<<","<<(int)c.b<<")";
+	// }else{
+	// 	s.put(c.b);
+	// 	s.put(c.g);
+	// 	s.put(c.r);
+	// }
 	return s;
 }
 
@@ -212,7 +212,7 @@ Color min(const Color& a,const Color& b){
 	c.r=(a.r<b.r?a.r:b.r);
 	c.g=(a.g<b.g?a.r:b.g);
 	c.b=(a.r<b.b?a.b:b.b);
-	return c;	
+	return c;
 }
 
 Color maxDif(const Color& a,const Color& b){

@@ -1,5 +1,5 @@
 #ifndef CIUDAD_H
-#define CIUDAD_H 
+#define CIUDAD_H
 #include "voronoi.h"   	   	      //Para calcular triangulacionaciones
 #include "owl.h"				  //Para generar los xml
 #include <map>		  			  //
@@ -9,7 +9,7 @@
 
 
 // Funcion que calcula una cuadricula de calles dentro de un poligono
-// Para adaptarse a los objetivos de la ciudad virtual, existe dependencia entre 
+// Para adaptarse a los objetivos de la ciudad virtual, existe dependencia entre
 // las lineas en comun que podrian tener varios poligonos, por lo que se requieren tener
 // referencias para que se modifique para todos los poligonos
 std::vector<_2D::Linea<double>> mallaDePuntos(const _2D::Poligono<double>& region, std::map<_2D::Linea<int>, LineaMultipunto<double>>& coleccionLineas, int largoManzanas, int anchoManzanas){
@@ -21,7 +21,7 @@ std::vector<_2D::Linea<double>> mallaDePuntos(const _2D::Poligono<double>& regio
 	//Se barre la matriz de punto base x altura
 	std::vector<_2D::Linea<double>> res, l;
 	for(double y = 0; y-largoManzanas<altura; y+=largoManzanas){
-		for(double x= anchoManzanas; x-largoManzanas<base; x+= anchoManzanas){		
+		for(double x= anchoManzanas; x-largoManzanas<base; x+= anchoManzanas){
 			_2D::Linea<double> li (_2D::Punto<double>(-x,-y),_2D::Punto<double>(-x+anchoManzanas,-y));
 			li.inicio = li.inicio.rotar(-angulo);
 			li.fin = li.fin.rotar(-angulo);
@@ -31,7 +31,7 @@ std::vector<_2D::Linea<double>> mallaDePuntos(const _2D::Poligono<double>& regio
 	}
 
 	for(double x = 0; x- anchoManzanas <base; x+=anchoManzanas){
-		for(double y = largoManzanas; y-largoManzanas<altura; y+=largoManzanas){		
+		for(double y = largoManzanas; y-largoManzanas<altura; y+=largoManzanas){
 			_2D::Linea<double> li (_2D::Punto<double>(-x,-y),_2D::Punto<double>(-x,-y+largoManzanas));
 			li.inicio = li.inicio.rotar(-angulo);
 			li.fin = li.fin.rotar(-angulo);
@@ -39,7 +39,7 @@ std::vector<_2D::Linea<double>> mallaDePuntos(const _2D::Poligono<double>& regio
 			l.push_back(li);
 		}
 	}
-	
+
 
 	//Filtra las lineas que quedan fuera del poligono y recorta aquellas que estan sobre el contorno
 	for(auto i: l){
@@ -64,7 +64,7 @@ std::vector<_2D::Linea<double>> mallaDePuntos(const _2D::Poligono<double>& regio
 		}
 		coleccionLineas[_2D::Linea<int>(avenida)] = lm;
 	}
-	
+
 	return res;
 }
 
@@ -86,7 +86,7 @@ public:
 
 	//Tamaños de la ciudad (coordendas van de (0,0) a (x,y))
 	//Cantidad de puntos para el voronoi inicial (n*m)
-	
+
 	Ciudad(int x, int y, int n, int m, int anchoManzanas,int largoManzanas, int avenidas_hor, int avenidas_ver,int iteracionesAvenida, double rotacionMaxima){
 		tam = _2D::Punto<int>(x,y);
 		tamMat = _2D::Punto<int>(n,m);
@@ -116,7 +116,7 @@ public:
 		}
 
 		//Se obtiene la triangulacion
-		//triangulacion=voronoi.dameGrafoTriangulacion();	
+		//triangulacion=voronoi.dameGrafoTriangulacion();
 		regiones = voronoi.regiones();
 		int tam = regiones.size();
 		int i=0;
@@ -148,14 +148,14 @@ public:
 				lineas_temp.insert(lineas_temp.begin(),ml.segmentos.begin(),ml.segmentos.end());
 			}
 		}
-		
+
 		//Una vez que fueron calculadas las avenidas y movidas al vector principal pueden ser eliminadas
 		avenidas.clear();
 
 
 
 		//Se eliminan las lineas que son muy pequeñas, para estas lineas que van de A a B, se calcula
-		//El punto intermedio C y se intercambian los valores de A y B en las demas lineas por C. 
+		//El punto intermedio C y se intercambian los valores de A y B en las demas lineas por C.
 		//Trunca los valores reales para asi trabajar con enteros
 		std::vector<_2D::Linea<int>> lineas;
 		for(auto& l: lineas_temp){
@@ -194,7 +194,7 @@ public:
 		}
 
 		//lineas_temp=voronoi.dameLineas();
-		
+
 
 
 
@@ -204,24 +204,30 @@ public:
 	void guardaOntologia(const std::string& nombre){
 		/*
 			El archivo tiene 2 segmentos para describir la geometria de las calles de la ciudad:
-			1.- Un conjunto de puntos (x,y) que representan cruces 
+			1.- Un conjunto de puntos (x,y) que representan cruces
 			2.- Un conjunto de pares (a,b) que indican que el cruce con el id a esta conectado con el
 				cruce con el id b
 
-			Los id de los cruces no estan escritos en el archivo, pero son secuenciales en el orden de 
-				aparicion de los mismos dentro del archivo. 
+			Los id de los cruces no estan escritos en el archivo, pero son secuenciales en el orden de
+				aparicion de los mismos dentro del archivo.
 		*/
 
 		std::ofstream arch(nombre);
-		arch<<llaves.size()<<std::endl;
+		arch<<"<cruces>"<<std::endl;
+		arch<<"<total="<<llaves.size()<<">"<<std::endl;
+		int counter = 0;
 		for(auto p: llaves){
-			arch<<p.second.x<<" "<<p.second.y<<std::endl;
+			counter++;
+			arch<<"<id="<<counter<<">"<<p.second.x<<", "<<p.second.y<<"</id>"<<std::endl;
 		}
-		
-		arch<<lineas.size()<<std::endl;
+		arch<<"</cruces>"<<std::endl;
+		arch<<"<lineas>"<<std::endl;
+		arch<<"<total="<<lineas.size()<<">"<<std::endl;
+		counter = 0;
 		for(auto p: lineas){
-			arch<<p.x<<" "<<p.y<<std::endl;
+			arch<<"<id="<<counter<<">"<<p.x<<", "<<p.y<<"</id>"<<std::endl;
 		}
+		arch<<"</lineas>"<<std::endl;
 		arch.close();
 	}
 

@@ -19,12 +19,12 @@ class Imagen{
 			y=b;
 			pixels= new Color[x*y];
 		}
-		
+
 		Imagen(){
 			pixels=NULL;
 			x=y=0;
 		}
-		
+
 		Imagen(int a, int b,const Color& c){
 			x=a;
 			y=b;
@@ -42,7 +42,7 @@ class Imagen{
 		}
 
 
-		
+
 		/*
 		Imagen(Imagen&& I){
 			x=I.x;
@@ -59,11 +59,11 @@ class Imagen{
 		int filas()const{
 			return y;
 		}
-		
+
 		int columnas()const{
 			return x;
 		}
-		
+
 		Color& en(int i, int j){
 			if(i < 0 or i >= y or j < 0 or j >= x )
 				throw 0;
@@ -77,7 +77,7 @@ class Imagen{
 			//std::cout<<i*x+j<<std::endl;
 			return pixels[i*x+j];
 		}
-		
+
 		Imagen escalaDeGrises()const{
 			Imagen ret(x,y);
 			for(int i=0;i<y;i++)
@@ -144,15 +144,15 @@ class Imagen{
 					try{
 						en(p,q) = o.en(i,j);
 					}catch(int e){
-					
+
 					}
 				}
 		}
-	
+
 		~Imagen(){
 			delete[] pixels;
 		}
-		
+
 		Imagen operator=(const Imagen& I){
 			delete pixels;
 			x=I.x;
@@ -163,7 +163,7 @@ class Imagen{
 			return *this;
 		}
 
-		
+
 		Imagen filtroMatriz(double coeficientes[3][3])const {
 			Imagen ret(x,y);
 			for(int i=0;i<y;i++){
@@ -207,7 +207,7 @@ class Imagen{
 				{1.0/7,5.0/21,1.0/7},
 				{1.0/21,1.0/7,1.0/21}
 			};
-			return filtroMatriz(coeficientes);	
+			return filtroMatriz(coeficientes);
 		}
 
 		Imagen filtroAfilador()const{
@@ -238,7 +238,7 @@ class Imagen{
 					for(int k=0;k<4;k++){
 						try{
 							Color z=en(i+dy[k],j+dx[k]);
-							c=min(c,z); 
+							c=min(c,z);
 						}catch(int e){
 
 						}
@@ -258,7 +258,7 @@ class Imagen{
 					for(int k=0;k<4;k++){
 						try{
 							Color z=en(i+dy[k],j+dx[k]);
-							c=max(c,z); 
+							c=max(c,z);
 						}catch(int e){
 
 						}
@@ -324,7 +324,7 @@ class Imagen{
 
 		void escribe_tabla(std::ofstream& f,std::vector<int> tabla[], int identificador){
 			if(tabla[0].size()){
-				tabla[1].push_back(tabla[0][0]);	
+				tabla[1].push_back(tabla[0][0]);
 			}
 			int longitud=18;
 			for(int i=1;i<=16;i++){
@@ -352,7 +352,7 @@ class Imagen{
 				arbol->der->letra = tabla[0][0]+1;
 				return arbol;
 			}
-			std::queue<NodoHuffman<int>*> cola; 
+			std::queue<NodoHuffman<int>*> cola;
 			NodoHuffman<int>* arbol = new NodoHuffman<int>();
 			arbol->letra=123123;
 			arbol->repeticiones=0;
@@ -398,10 +398,10 @@ class Imagen{
 			bool EOB = false;
 			for(int i=0;i<63 and not EOB;i++){
 				flujo.insert(flujo.end(),diccionario[cadena[0]].begin(), diccionario[cadena[0]].end());
-				int categoria = cadena[0]%16; 
+				int categoria = cadena[0]%16;
 				EOB = cadena[0]==0;
 				cadena.erase(cadena.begin());
-				if(categoria!=0){	
+				if(categoria!=0){
 					int dato = coeficientes[0];
 					coeficientes.erase(coeficientes.begin());
 					escribe_minbyte(categoria,dato, flujo);
@@ -411,9 +411,9 @@ class Imagen{
 
 		void escribe_dc(std::vector<int>& cadena,std::vector<bool>& flujo,std::map<int,std::vector<bool>>& diccionario,std:: vector<int>& coeficientes){
 			flujo.insert(flujo.end(),diccionario[cadena[0]].begin(), diccionario[cadena[0]].end());
-			int categoria = cadena[0]%16; 
+			int categoria = cadena[0]%16;
 			cadena.erase(cadena.begin());
-			if(categoria!=0){	
+			if(categoria!=0){
 				int dato = coeficientes[0];
 				escribe_minbyte(categoria,dato, flujo);
 			}
@@ -426,7 +426,7 @@ class Imagen{
 
 		void guardaJPG(const char*nombre){
 			std::ofstream f(nombre);
-			
+
 			//cabeceras
 			f.put(0xff); f.put(0xd8); f.put(0xff); f.put(0xe0);
 			f.put(0x00); f.put(0x10); f.put(0x4a); f.put(0x46);
@@ -445,17 +445,17 @@ class Imagen{
 			for(int i=0;i<64;i++){
 				f.put(matriz[i]);
 			}
-			delete[] matriz;		
+			delete[] matriz;
 
-			f.put(0xff); f.put(0xc0); 
-			f.put(0x00); f.put(0x11); 
+			f.put(0xff); f.put(0xc0);
+			f.put(0x00); f.put(0x11);
 			f.put(0x08); f.put(y/256);
-			f.put(y%256); f.put(x/256); 
-			f.put(x%256); f.put(0x03); 
-			f.put(0x01); f.put(0x11); 
-			f.put(0x00); f.put(0x02); 
-			f.put(0x11); f.put(0x01); 
-			f.put(0x03); f.put(0x11); 
+			f.put(y%256); f.put(x/256);
+			f.put(x%256); f.put(0x03);
+			f.put(0x01); f.put(0x11);
+			f.put(0x00); f.put(0x02);
+			f.put(0x11); f.put(0x01);
+			f.put(0x03); f.put(0x11);
 			f.put(0x01);
 
 			//Calcular la cantidad de chunks
@@ -505,10 +505,10 @@ class Imagen{
 
 /*
 	//Despues se corre un RLC en cada uno de los coeficientes. para cada valor, se guarda como un par (z,d)
-	//donde z es la cantidad de ceros que anteceden al dato y d es la cantidad minima de bits que se requieren para codificar al dato 
+	//donde z es la cantidad de ceros que anteceden al dato y d es la cantidad minima de bits que se requieren para codificar al dato
 	//Se usa el siguiente sistema:
 	//Ambos datos se guardan en un byte, por lo que no puede haber coeficientes mayores a 15
-	//(15,0) representa un bloque de 16 ceros consecutivos. 
+	//(15,0) representa un bloque de 16 ceros consecutivos.
 	*				Values             Category        Bits for the value
 	*					0            	        0                   -
 	*			      -1,1                  	1                  0,1
@@ -538,7 +538,7 @@ class Imagen{
 					delete[] zigzagCr;
 					delete[] zigzagCb;
 				}
-			}	
+			}
 
 			for(int i=coeficientes_YDC.size()-1;i>0;i--){
 				coeficientes_YDC[i]-=coeficientes_YDC[i-1];
@@ -606,7 +606,7 @@ class Imagen{
 			std::map<int,std::vector<bool>> diccionarioYDC;
 			std::map<int,std::vector<bool>> diccionarioCAC;
 			std::map<int,std::vector<bool>> diccionarioCDC;
-			
+
 
 			std::vector<bool> aux;//vector auxiliar para la construccion de las tablas;
 
@@ -631,9 +631,9 @@ class Imagen{
 				cout<<endl;
 			}*/
 
-			
 
-			f.put(0xff); f.put(0xda); 
+
+			f.put(0xff); f.put(0xda);
 			f.put(0x00); f.put(0x0c);
 			f.put(0x03); f.put(0x01);
 			f.put(0x00); f.put(0x02);
@@ -721,7 +721,7 @@ class Imagen{
 							f.put(0);
 						}
 					}
-			f.put(0xff); f.put(0xd9); 
+			f.put(0xff); f.put(0xd9);
 			f.close();
 			borrar(arbolYAC); arbolYAC = ArbolVacio;
 			borrar(arbolYDC); arbolYDC = ArbolVacio;
@@ -734,11 +734,11 @@ class Imagen{
 			std::ofstream f(nombre);
 			f.put('B'); f.put('M'); //Tipo
 			int tam=54+x*y;
-			f.write((char*)&tam,sizeof(int)); 
+			f.write((char*)&tam,sizeof(int));
 			int reservado=0;
-			f.write((char*)&reservado,sizeof(int));  
+			f.write((char*)&reservado,sizeof(int));
 			int offset=0x36;
-			f.write((char*)&offset,sizeof(int));  
+			f.write((char*)&offset,sizeof(int));
 			int tamCabeceras=40;
 			f.write((char*)&tamCabeceras,sizeof(int));
 			f.write((char*)&(x),sizeof(int)); //ancho
@@ -749,7 +749,7 @@ class Imagen{
 			f.write((char*)&bits,sizeof(short));
 			int compresion=0;
 			f.write((char*)&compresion,sizeof(int));
-			f.put(0); f.put(0); f.put(0); f.put(0); //Tamaño Paleta
+			f.put(0); f.put(0); f.put(0); f.put(0); //Tamaï¿½o Paleta
 			f.put(0); f.put(0); f.put(0); f.put(0); //BitsPorMetroX
 			f.put(0); f.put(0); f.put(0); f.put(0); //BitsPorMetroY
 			f.put(0); f.put(0); f.put(0); f.put(0); //Colores Usados
@@ -764,7 +764,7 @@ class Imagen{
 			}
 			f.close();
 		}
-		
+
 		void leeBMP(const char *nombre){
 			delete pixels;
 			std::ifstream f(nombre);
@@ -775,14 +775,14 @@ class Imagen{
 			f.read((char*)&tam,sizeof(int));
 			f.get(); f.get(); f.get(); f.get(); //Reservado
 			f.get(); f.get(); f.get(); f.get(); //Offset
-			f.get(); f.get(); f.get(); f.get(); //Tamaño cabecera
+			f.get(); f.get(); f.get(); f.get(); //Tamaï¿½o cabecera
 			f.read((char*)&x,sizeof(int)); //x++;
 			f.read((char*)&y,sizeof(int)); //y++;
 			f.get(); f.get(); //Plastd::nos
 			short bits;
 			f.read((char*)&bits,sizeof(short));
 			f.get(); f.get(); f.get(); f.get(); //Compresion
-			f.get(); f.get(); f.get(); f.get(); //Tamaño Paleta
+			f.get(); f.get(); f.get(); f.get(); //Tamaï¿½o Paleta
 			f.get(); f.get(); f.get(); f.get(); //BitsPorMetroX
 			f.get(); f.get(); f.get(); f.get(); //BitsPorMetroY
 			f.get(); f.get(); f.get(); f.get(); //Colores Usados
@@ -800,39 +800,39 @@ class Imagen{
 			}
 			f.close();
 		}
-		
+
 		Imagen region(int p, int q, int h, int k, Imagen& r)const{
 			delete r.pixels;
 			r.x=h;
 			r.y=k;
 			r.pixels = new Color[h*k];
-			
+
 			for(int i=0;i<k;i++)
 				for(int j=0;j<h;j++)
 					try{
 						r.en(i,j) = en(q+i,p+j);
 					}catch(int e){
 					}
-			
-			
+
+
 			return r;
 		}
 
-		
+
 		Imagen region(int p, int q, int h, int k)const{
 			Imagen r;
 			r.x=h;
 			r.y=k;
 			r.pixels = new Color[h*k];
-			
+
 			for(int i=0;i<k;i++)
 				for(int j=0;j<h;j++)
 					try{
 						r.en(i,j) = en(q+i,p+j);
 					}catch(int e){
 					}
-			
-			
+
+
 			return r;
 		}
 
@@ -903,7 +903,7 @@ class Imagen{
 
 	friend void drawAt(const Imagen& M, int h, int k);
 	friend inline void glReadPixels(Imagen &M);
-	friend inline void glReadPixels(Imagen &M ,int x2, int y2);	
+	friend inline void glReadPixels(Imagen &M ,int x2, int y2);
 	friend inline void glDrawPixels(const Imagen &M);
 	friend inline void glDrawPixels(const Imagen *M);
 
