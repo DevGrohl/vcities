@@ -204,30 +204,24 @@ public:
 	void guardaOntologia(const std::string& nombre){
 		/*
 			El archivo tiene 2 segmentos para describir la geometria de las calles de la ciudad:
-			1.- Un conjunto de puntos (x,y) que representan cruces
+			1.- Un conjunto de puntos (x,y) que representan cruces 
 			2.- Un conjunto de pares (a,b) que indican que el cruce con el id a esta conectado con el
 				cruce con el id b
 
-			Los id de los cruces no estan escritos en el archivo, pero son secuenciales en el orden de
-				aparicion de los mismos dentro del archivo.
+			Los id de los cruces no estan escritos en el archivo, pero son secuenciales en el orden de 
+				aparicion de los mismos dentro del archivo. 
 		*/
 
 		std::ofstream arch(nombre);
-		arch<<"<cruces>"<<std::endl;
-		arch<<"<total="<<llaves.size()<<">"<<std::endl;
-		int counter = 0;
+		arch<<llaves.size()<<std::endl;
 		for(auto p: llaves){
-			counter++;
-			arch<<"<id="<<counter<<">"<<p.second.x<<", "<<p.second.y<<"</id>"<<std::endl;
+			arch<<p.second.x<<" "<<p.second.y<<std::endl;
 		}
-		arch<<"</cruces>"<<std::endl;
-		arch<<"<lineas>"<<std::endl;
-		arch<<"<total="<<lineas.size()<<">"<<std::endl;
-		counter = 0;
+		
+		arch<<lineas.size()<<std::endl;
 		for(auto p: lineas){
-			arch<<"<id="<<counter<<">"<<p.x<<", "<<p.y<<"</id>"<<std::endl;
+			arch<<p.x<<" "<<p.y<<std::endl;
 		}
-		arch<<"</lineas>"<<std::endl;
 		arch.close();
 	}
 

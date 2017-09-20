@@ -16,8 +16,8 @@ using namespace _2D;
 
 typedef double llint;
 
-const int SCREEN_X = 1000;
-const int SCREEN_Y = 1000;
+const int SCREEN_X = 400;
+const int SCREEN_Y = 400;
 const char * WINDOW_NAME = "VCities";
 const int ANCHURA_MANZANAS = 12;
 const int LARGO_MANZANAS = 25;
